@@ -1,5 +1,6 @@
 import pygame
 from halma.constants import *
+from halma.board import Board
 
 FPS = 60
 
@@ -10,6 +11,7 @@ pygame.display.set_caption("Halma")
 def main():
     run = True
     clock = pygame.time.Clock()
+    board = Board()
 
     while run:
         clock.tick(FPS)
@@ -20,6 +22,9 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pass
+
+        board.draw_board(WIN)
+        pygame.display.update()
 
     pygame.quit()
 
