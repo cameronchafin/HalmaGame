@@ -1,4 +1,4 @@
-import pygame.draw
+import pygame
 
 from halma.constants import *
 
@@ -10,6 +10,7 @@ class Piece:
         self.color = color
         self.x = 0
         self.y = 0
+        self.calc_pos()
 
     def calc_pos(self):
         """
