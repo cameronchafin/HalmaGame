@@ -92,7 +92,7 @@ class Board:
             col (int): The column to move the piece to.
         """
 
-        # Swap the positions of the pieces on the board and
+        # Swaps the positions of the pieces on the board and
         # update the piece's position attribute
         self.board[piece.row][piece.col], self.board[row][col] = self.board[row][col], self.board[piece.row][piece.col]
         piece.move(row, col)
