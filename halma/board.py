@@ -6,7 +6,6 @@ from halma.piece import Piece
 class Board:
     def __init__(self):
         self.board = []
-        self.selected_piece = None
         self.create_board()
 
     def draw_board(self, win):

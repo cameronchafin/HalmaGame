@@ -1,6 +1,6 @@
 import pygame
 from halma.constants import *
-from halma.board import Board
+from halma.game import Game
 
 FPS = 60
 
@@ -18,7 +18,7 @@ def get_row_col_from_mouse(pos):
 def main():
     run = True
     clock = pygame.time.Clock()
-    board = Board()
+    game = Game(WIN)
 
     while run:
         clock.tick(FPS)
@@ -31,10 +31,9 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 row, col = get_row_col_from_mouse(pos)
-                game.select(row, col)
+                # game.select(row, col)
 
-        board.draw(WIN)
-        pygame.display.update()
+        game.update()
 
     pygame.quit()
 
