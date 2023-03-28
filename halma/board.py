@@ -68,3 +68,31 @@ class Board:
                 if piece != 0:
                     # If there is a piece on the square, draw it.
                     piece.draw(win)
+
+    def get_piece(self, row, col):
+        """
+        Returns the game piece located at the given row and column of the game board.
+
+        Parameters:
+            row (int): The row index of the game board.
+            col (int): The column index of the game board.
+
+        Returns:
+            piece (Piece or int): The game piece at the specified location, or 0 if the location is empty.
+        """
+        return self.board[row][col]
+
+    def move(self, piece, row, col):
+        """
+        Move a game piece to the specified row and column on the board.
+
+        Parameters:
+            piece (Piece): The game piece to move.
+            row (int): The row to move the piece to.
+            col (int): The column to move the piece to.
+        """
+
+        # Swap the positions of the pieces on the board and
+        # update the piece's position attribute
+        self.board[piece.row][piece.col], self.board[row][col] = self.board[row][col], self.board[piece.row][piece.col]
+        piece.move(row, col)
