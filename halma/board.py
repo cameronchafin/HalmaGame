@@ -1,4 +1,5 @@
 import pygame
+import math
 from halma.constants import *
 from halma.piece import Piece
 
@@ -165,17 +166,6 @@ class Board:
         if row < 0 or row >= ROWS or col < 0 or col >= COLS:
             return False
 
-        # # Check if square is not occupied by another piece
-        # if self.board[row][col] != 0:
-        #     return False
-
-        # # Check if square is not in the starting zone of the player
-        # if color == BLACK and (row, col) in BLACK_START:
-        #     return False
-        #
-        # if color == WHITE and (row, col) in WHITE_START:
-        #     return False
-
         return True
 
     def get_valid_moves(self, piece):
@@ -277,6 +267,67 @@ class Board:
                         valid_jumps += jumps
 
         return valid_jumps
+
+    def evaluate(self):
+        """
+        Evaluates the current state of the Halma board, returning a score representing the
+        relative advantage of the white player over the black player.
+
+        The evaluation is based on three factors:
+        1. Euclidean distance between each player's pieces and the opposing corner.
+        2. Control of the center of the board.
+        3. Proximity between friendly pieces.
+
+        A positive score indicates an advantage for the white player, while a negative score
+        indicates an advantage for the black player.
+
+        Returns: A floating-point number representing the evaluation score.
+        """
+        # Euclidean distance between each player's pieces and the opposing corner
+        black_distance = 0
+        white_distance = 0
+        for row in range(8):
+            for col in range(8):
+                piece = self.get_piece(row, col)
+                if piece.color == BLACK:
+                    # Euclidean distance to white corner (7,7)
+                    black_distance += math.sqrt((row - 7) ** 2 + (col - 7) ** 2)
+                elif piece.color == WHITE:
+                    # Euclidean distance to black corner (0,0)
+                    white_distance += math.sqrt((row - 0) ** 2 + (col - 0) ** 2)
+
+        # Control of the center of the board
+        center_control = 0
+        for row in range(3, 5):
+            for col in range(3, 5):
+                piece = self.get_piece(row, col)
+                if piece.color == BLACK:
+                    center_control += 1
+                elif piece.color == WHITE:
+                    center_control -= 1
+
+        # Proximity between friendly pieces
+        black_proximity = 0
+        white_proximity = 0
+        for row in range(8):
+            for col in range(8):
+                piece = self.get_piece(row, col)
+                if piece.color == BLACK:
+                    for x in range(8):
+                        for y in range(8):
+                            piece = self.get_piece(x, y)
+                            if piece.color == BLACK:
+                                black_proximity -= math.sqrt((row - x) ** 2 + (col - y) ** 2)
+                elif piece.color == WHITE:
+                    for x in range(8):
+                        for y in range(8):
+                            piece = self.get_piece(x, y)
+                            if piece.color == WHITE:
+                                white_proximity -= math.sqrt((row - x) ** 2 + (col - y) ** 2)
+
+        # Total evaluation
+        evaluation = (white_distance - black_distance) + center_control + (white_proximity - black_proximity)
+        return evaluation
 
     def winner(self):
         white_pieces = self.get_all_pieces("white")
