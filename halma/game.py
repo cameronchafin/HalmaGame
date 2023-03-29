@@ -28,7 +28,8 @@ class Game:
         Redraw the board and update the screen
         """
         self.board.draw(self.win)
-        # self.draw_valid_moves(self.valid_moves)
+        self.draw_valid_moves(self.valid_moves)
+        self.draw_selected(self.selected)
         pygame.display.update()
 
     def _init(self):
@@ -38,7 +39,7 @@ class Game:
         self.selected = None
         self.board = Board()
         self.turn = BLACK
-        self.valid_moves = {}
+        self.valid_moves = []
 
     def reset(self):
         """
@@ -80,6 +81,20 @@ class Game:
 
         return False
 
+    def draw_selected(self, selected):
+        """
+        Draws a circle on the board around the selected piece
+
+        Parameters:
+            selected (Piece): The selected piece object.
+
+        Returns:
+            None
+        """
+
+        if self.selected:
+            pygame.draw.circle(self.win, LIGHT_GREEN, (selected.x, selected.y), 47, 10)
+
     def _move(self, row, col):
         """
         Move the selected piece to a new location on the board.
@@ -107,16 +122,49 @@ class Game:
 
         return True
 
+    def draw_valid_moves(self, moves):
+        """
+        Draw circles on board to represent the valid moves for the selected piece.
+
+        Parameters:
+            moves (dict): A dictionary of valid moves for the selected piece.
+
+        Returns:
+            None
+        """
+
+        # loop through each valid move and draw a blue circle on the board to represent it
+        for move in moves:
+            row, col = move
+
+            # the circle is centered at the middle of the square and has a radius of 15 pixels
+            pygame.draw.circle(
+                self.win,
+                EMERALD,
+                (col * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2),
+                15
+            )
+
     def change_turn(self):
         """
         Changes the turn to the other player and clears the valid_moves dictionary.
         """
 
-        # clear the dictionary of valid moves for the previous player
-        self.valid_moves = {}
+        # clear the list of valid moves for the previous player
+        self.valid_moves = []
+
+        # clear the selected piece for the previous player
+        self.selected = None
 
         # change the turn to the other player
         if self.turn == BLACK:
             self.turn = WHITE
         else:
             self.turn = BLACK
+
+    def winner(self):
+        """
+        Determine the winner of the game
+        """
+        return self.board.winner()
+
