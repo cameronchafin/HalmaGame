@@ -276,7 +276,7 @@ class Board:
         The evaluation is based on three factors:
         1. Euclidean distance between each player's pieces and the opposing corner.
         2. Control of the center of the board.
-        3. Proximity between friendly pieces.
+        3. Number of pieces in the opponent's starting zone.
 
         A positive score indicates an advantage for the white player, while a negative score
         indicates an advantage for the black player.
@@ -306,45 +306,44 @@ class Board:
                 elif piece.color == WHITE:
                     center_control -= 1
 
-        # Proximity between friendly pieces
+        # Number of pieces in the opponent's starting zone
         black_proximity = 0
         white_proximity = 0
         for row in range(8):
             for col in range(8):
                 piece = self.get_piece(row, col)
-                if piece.color == BLACK:
-                    for x in range(8):
-                        for y in range(8):
-                            piece = self.get_piece(x, y)
-                            if piece.color == BLACK:
-                                black_proximity -= math.sqrt((row - x) ** 2 + (col - y) ** 2)
-                elif piece.color == WHITE:
-                    for x in range(8):
-                        for y in range(8):
-                            piece = self.get_piece(x, y)
-                            if piece.color == WHITE:
-                                white_proximity -= math.sqrt((row - x) ** 2 + (col - y) ** 2)
+                if piece.color == BLACK and (row, col) in WHITE_START:
+                    black_proximity += 1
+                elif piece.color == WHITE and (row, col) in BLACK_START:
+                    white_proximity += 1
 
         # Total evaluation
-        evaluation = (white_distance - black_distance) + center_control + (white_proximity - black_proximity)
+        evaluation = (white_distance - black_distance) / 16.0 + center_control / 4.0 + (
+                    white_proximity - black_proximity) / 2.0
         return evaluation
 
     def winner(self):
-        white_pieces = self.get_all_pieces("white")
-        black_pieces = self.get_all_pieces("black")
-        white_wins = True
-        black_wins = True
-        for piece in white_pieces:
-            if (piece.row, piece.col) not in BLACK_START:
-                white_wins = False
-                break
-        for piece in black_pieces:
-            if (piece.row, piece.col) not in WHITE_START:
-                black_wins = False
-                break
+        """
+        Determine the winner of the game.
+
+        Returns:
+            None if there is no winner, "white" if all white pieces are in black's starting zone,
+            or "black" if all black pieces are in white's starting zone.
+        """
+        # Get all the pieces for each player
+        white_pieces = self.get_all_pieces(WHITE)
+        black_pieces = self.get_all_pieces(BLACK)
+
+        # Check if all the white pieces are in black's starting zone
+        white_wins = all(piece.position() in BLACK_START for piece in white_pieces)
+
+        # Check if all the black pieces are in white's starting zone
+        black_wins = all(piece.position() in WHITE_START for piece in black_pieces)
+
+        # Return the winner, if there is one
         if white_wins and not black_wins:
-            return WHITE
+            return "white"
         elif black_wins and not white_wins:
-            return BLACK
+            return "black"
         else:
             return None

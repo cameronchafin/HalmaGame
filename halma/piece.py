@@ -12,6 +12,16 @@ class Piece:
         self.y = 0
         self.calc_pos()
 
+    def position(self):
+        """
+        Returns the current position of the piece as a tuple (row, col).
+
+        Returns:
+            A tuple representing the current position of the piece, with the row
+            and column indices as the first and second elements of the tuple, respectively.
+        """
+        return (self.row, self.col)
+
     def calc_pos(self):
         """
         Calculates the piece's x and y positions based on its row and column.
