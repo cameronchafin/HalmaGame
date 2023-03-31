@@ -1,5 +1,7 @@
 # Halma Game
 
+<img width="300" alt="Screenshot 2023-03-31 at 7 41 28 PM" src="https://user-images.githubusercontent.com/63039479/229101012-1efe1fb2-6198-4ffc-b2c8-4f1cbd5a7119.png">
+
 This is a Python implementation of the board game Halma, using the Pygame library for the graphical user interface.
 Halma is a two-player strategy board game invented in the 19th century. This version of the game is played on an 8x8 square board between A player and the computer. Similar to the game Chinese Checkers, gameplay involves players taking turns moving their pieces from their starting corner of the board into the opposite corner before their opponent.
 
