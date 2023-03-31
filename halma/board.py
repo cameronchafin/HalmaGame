@@ -1,10 +1,15 @@
 import pygame
-import math
 from halma.constants import *
 from halma.piece import Piece
 
 
 class Board:
+    """
+    Represents a Halma board as an 8x8 grid of squares.
+
+    Attributes:
+        board (list): A 2D list representing the state of the board.
+    """
     def __init__(self):
         self.board = []
         self.create_board()
@@ -77,12 +82,18 @@ class Board:
             self.board.append([0] * COLS)
 
         # Add black pieces to the top left corner
-        black_positions = [(0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2), (2, 0), (2, 1), (3, 0)]
+        black_positions = [(0, 0), (0, 1), (0, 2), (0, 3),
+                           (1, 0), (1, 1), (1, 2),
+                           (2, 0), (2, 1),
+                           (3, 0)]
         for row, col in black_positions:
             self.board[row][col] = Piece(row, col, BLACK)
 
         # Add white pieces to the bottom right corner
-        white_positions = [(4, 7), (5, 6), (5, 7), (6, 5), (6, 6), (6, 7), (7, 4), (7, 5), (7, 6), (7, 7)]
+        white_positions = [(4, 7),
+                           (5, 6), (5, 7),
+                           (6, 5), (6, 6), (6, 7),
+                           (7, 4), (7, 5), (7, 6), (7, 7)]
         for row, col in white_positions:
             self.board[row][col] = Piece(row, col, WHITE)
 
@@ -270,41 +281,32 @@ class Board:
 
     def evaluate(self):
         """
-        Evaluates the current state of the Halma board, returning a score representing the
-        relative advantage of the white player over the black player.
+        Evaluates the current state of the Halma board, returning a score representing
+        the relative advantage of the white player over the black player.
 
         The evaluation is based on three factors:
-        1. Euclidean distance between each player's pieces and the opposing corner.
-        2. Control of the center of the board.
-        3. Number of pieces in the opponent's starting zone.
+            1. Distance between each player's pieces and the opposing starting zone.
+            2. Number of pieces in the opponent's starting zone.
+            3. Penalty for pieces still in their starting zone.
 
-        A positive score indicates an advantage for the white player, while a negative score
-        indicates an advantage for the black player.
+        A positive score indicates an advantage for the white player,
+        while a negative score indicates an advantage for the black player.
 
-        Returns: A floating-point number representing the evaluation score.
+        Returns:
+            A floating-point number representing the evaluation score.
         """
-        # Euclidean distance between each player's pieces and the opposing corner
+        # Distance between each player's pieces and the opposing starting zone
         black_distance = 0
         white_distance = 0
         for row in range(8):
             for col in range(8):
                 piece = self.get_piece(row, col)
-                if piece.color == BLACK:
-                    # Euclidean distance to white corner (7,7)
-                    black_distance += math.sqrt((row - 7) ** 2 + (col - 7) ** 2)
-                elif piece.color == WHITE:
-                    # Euclidean distance to black corner (0,0)
-                    white_distance += math.sqrt((row - 0) ** 2 + (col - 0) ** 2)
-
-        # Control of the center of the board
-        center_control = 0
-        for row in range(3, 5):
-            for col in range(3, 5):
-                piece = self.get_piece(row, col)
-                if piece.color == BLACK:
-                    center_control += 1
-                elif piece.color == WHITE:
-                    center_control -= 1
+                if piece != 0 and piece.color == BLACK:
+                    # Manhattan distance to white starting zone
+                    black_distance += abs(row - 0) + abs(col - 0)
+                elif piece != 0 and piece.color == WHITE:
+                    # Manhattan distance to black starting zone
+                    white_distance += abs(row - 7) + abs(col - 7)
 
         # Number of pieces in the opponent's starting zone
         black_proximity = 0
@@ -312,14 +314,27 @@ class Board:
         for row in range(8):
             for col in range(8):
                 piece = self.get_piece(row, col)
-                if piece.color == BLACK and (row, col) in WHITE_START:
+                if piece != 0 and piece.color == BLACK and (row, col) in WHITE_START:
                     black_proximity += 1
-                elif piece.color == WHITE and (row, col) in BLACK_START:
+                elif piece != 0 and piece.color == WHITE and (row, col) in BLACK_START:
                     white_proximity += 1
 
-        # Total evaluation
-        evaluation = (white_distance - black_distance) / 16.0 + center_control / 4.0 + (
-                    white_proximity - black_proximity) / 2.0
+        # Penalty for pieces still in their starting zone
+        black_start_penalty = 0
+        white_start_penalty = 0
+        for row, col in BLACK_START:
+            piece = self.get_piece(row, col)
+            if piece != 0 and piece.color == BLACK:
+                black_start_penalty += 1
+        for row, col in WHITE_START:
+            piece = self.get_piece(row, col)
+            if piece != 0 and piece.color == WHITE:
+                white_start_penalty += 1
+
+        # Total evaluation with modified weights
+        evaluation = 4 * (white_distance - black_distance) / 16.0 + (
+                       white_proximity - black_proximity) * 2.0 - (
+                       white_start_penalty - black_start_penalty) / 4.0
         return evaluation
 
     def winner(self):
@@ -327,8 +342,8 @@ class Board:
         Determine the winner of the game.
 
         Returns:
-            None if there is no winner, "white" if all white pieces are in black's starting zone,
-            or "black" if all black pieces are in white's starting zone.
+            None if there is no winner, "White wins" if all white pieces are in black's starting zone,
+            or "Black wins" if all black pieces are in white's starting zone.
         """
         # Get all the pieces for each player
         white_pieces = self.get_all_pieces(WHITE)
@@ -342,8 +357,8 @@ class Board:
 
         # Return the winner, if there is one
         if white_wins and not black_wins:
-            return "white"
+            return "White wins"
         elif black_wins and not white_wins:
-            return "black"
+            return "Black wins"
         else:
             return None

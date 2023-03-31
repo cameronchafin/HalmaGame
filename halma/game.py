@@ -41,6 +41,12 @@ class Game:
         self.turn = BLACK
         self.valid_moves = []
 
+    def get_board(self):
+        """
+        Returns the current board state as a 2D list.
+        """
+        return self.board
+
     def reset(self):
         """
         Reset the game variables
@@ -145,6 +151,15 @@ class Game:
                 15
             )
 
+    def ai_move(self, board):
+        """Updates the game board with the AI's move and switches the turn to the user's.
+
+        Parameters:
+            board (Board): The new board state after the AI's move.
+        """
+        self.board = board
+        self.change_turn()
+
     def change_turn(self):
         """
         Changes the turn to the other player and clears the valid_moves dictionary.
@@ -156,7 +171,7 @@ class Game:
         # clear the selected piece for the previous player
         self.selected = None
 
-        # change the turn to the other player
+        # change the turn to the other player and increment turns counter
         if self.turn == BLACK:
             self.turn = WHITE
         else:

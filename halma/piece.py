@@ -1,10 +1,27 @@
 import pygame
-
 from halma.constants import *
 
 
 class Piece:
+    """
+    A class representing a piece on the Halma board.
+
+    Attributes:
+        row (int): the row index of the piece on the board
+        col (int): the column index of the piece on the board
+        color (str): the color of the piece (either "BLACK" or "WHITE")
+        x (int): the x-coordinate of the piece on the game window
+        y (int): the y-coordinate of the piece on the game window
+    """
     def __init__(self, row, col, color):
+        """
+        Initializes a Piece object with the given row, column, and color.
+
+        Args:
+            row (int): the row index of the piece on the board
+            col (int): the column index of the piece on the board
+            color (str): the color of the piece (either "BLACK" or "WHITE")
+        """
         self.row = row
         self.col = col
         self.color = color
