@@ -59,10 +59,11 @@ In the minimax algorithm, the AI simulates future moves by both itself and the o
 3. Run the game using the command: python main.py
 
 ## How to Play
-<img src="https://user-images.githubusercontent.com/63039479/229262690-1195eef6-0823-4d85-8ad8-7167b332cb7f.gif" alt="Halma Play" width="400"/>
+<img src="https://user-images.githubusercontent.com/63039479/229272541-0aa0ce39-1676-48f9-a4a8-f7b2f593abc2.gif" alt="Halma Play 2" width="400"/>
 
 - The player competes against the AI opponent to move
 - Use the mouse to select and move pieces, and to see the available moves for each piece
 - The game ends when one player moves all their pieces from their starting zone to the opposite corner before their opponent
+
 
 
